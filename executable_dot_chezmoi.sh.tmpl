@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Define the key paths
+KEY_FILE="$HOME/.config/chezmoi/key.txt"
+ENCRYPTED_KEY_FILE="{{ .chezmoi.sourceDir }}/key.txt.age"
+
+if [ ! -f "$KEY_FILE" ]; then
+    echo "🔑 Decrypting age key..."
+    mkdir -p "$HOME/.config/chezmoi"
+    # This will prompt for your passphrase
+    age -d -o "$KEY_FILE" "$ENCRYPTED_KEY_FILE"
+fi
