@@ -1,21 +1,13 @@
 #!/bin/sh
 
-# 1. Install dependencies based on OS
-if ! command -v age >/dev/null || ! command -v curl >/dev/null; then
-  echo "📦 Installing dependencies..."
-  if [ "$(uname)" = "Linux" ]; then
-    sudo apt-get update && sudo apt-get install -y age curl
-  elif [ "$(uname)" = "Darwin" ]; then
-    brew install age curl
-  fi
+# 1. Install age if missing (needed for the next step)
+if ! command -v age >/dev/null; then
+    sudo apt-get update && sudo apt-get install -y age
 fi
 
-# 2. Setup the config directory
-mkdir -p "$HOME/.config/chezmoi"
-
-# 3. Decrypt the age key (if it doesn't exist)
+# 2. Decrypt the key
 if [ ! -f "$HOME/.config/chezmoi/key.txt" ]; then
-  echo "🔑 Decrypting private key..."
-  # This uses the sourceDir variable from chezmoi to find your encrypted key
-  age -d -o "$HOME/.config/chezmoi/key.txt" "{{ .chezmoi.sourceDir }}/key.txt.age"
+    mkdir -p "$HOME/.config/chezmoi"
+    echo "🔑 Enter passphrase to decrypt age key:"
+    age -d -o "$HOME/.config/chezmoi/key.txt" "{{ .chezmoi.sourceDir }}/key.txt.age"
 fi
